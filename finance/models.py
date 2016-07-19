@@ -153,9 +153,18 @@ class AssetValue(db.Model, CRUDMixin):
     volume = db.Column(db.Integer)
 
     @classmethod
-    def at(cls, asset_id, base_asset_id, evaluated_at,
-           granularity=Granularity.day, approximation=True):
-        """Returns an asset value evaluated at a particular date/time."""
+    def at(cls, asset, base_asset, evaluated_at,
+           granularity=Granularity.day, approximation=False):
+        """Returns an asset value evaluated at a particular date/time.
+
+        :param asset_id:
+        :param base_asset:
+        :param evaluated:
+        :param granularity:
+        :param approximation: If true and an asset value record is unavailable
+        at `evaluated_at`, returns the closest asset value in the past. If
+        false, raises `AssetValueUnavailableException`.
+        """
         if not evaluated_at:
             evaluated_at = datetime.utcnow()
 
@@ -167,9 +176,9 @@ class AssetValue(db.Model, CRUDMixin):
             raise NotImplementedError
 
         asset_value = cls.query \
-            .filter(cls.asset_id == asset_id,
+            .filter(cls.asset == asset,
                     cls.granularity == granularity,
-                    cls.base_asset_id == base_asset_id)
+                    cls.base_asset == base_asset)
 
         if approximation:
             asset_value = asset_value.filter(
@@ -335,25 +344,11 @@ class Account(db.Model, CRUDMixin):
                 net_asset_value += quantity
                 continue
 
-            asset_value = AssetValue.query \
-                .filter(AssetValue.asset == asset,
-                        AssetValue.granularity == granularity,
-                        AssetValue.base_asset == base_asset)
-            if approximation:
-                asset_value = asset_value.filter(
-                    AssetValue.evaluated_at <= evaluated_at) \
-                    .order_by(AssetValue.evaluated_at.desc())
-            else:
-                asset_value = asset_value.filter(
-                    AssetValue.evaluated_at == evaluated_at)
+            asset_value = AssetValue.at(
+                asset, base_asset, evaluated_at, granularity,
+                approximation)
 
-            asset_value = asset_value.first()
-
-            if asset_value:
-                worth = asset_value.close * quantity
-            else:
-                raise AssetValueUnavailableException()
-            net_asset_value += worth
+            net_asset_value += asset_value.close * quantity
 
         return net_asset_value
 

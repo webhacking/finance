@@ -17,23 +17,23 @@ def test_asset_value_at(asset_krw, asset_sp500):
         base_asset=asset_krw, granularity=Granularity.day, close=1100)
 
     with pytest.raises(AssetValueUnavailableException):
-        AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-06-30'))
+        AssetValue.at(asset_sp500, asset_krw, parse_date('2016-06-30'))
 
-    v = AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-07-01'))
+    v = AssetValue.at(asset_sp500, asset_krw, parse_date('2016-07-01'))
     assert v.close == 1000
 
-    v = AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-07-02'))
+    v = AssetValue.at(asset_sp500, asset_krw, parse_date('2016-07-02'))
     assert v.close == 980
 
-    v = AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-07-03'))
+    v = AssetValue.at(asset_sp500, asset_krw, parse_date('2016-07-03'))
     assert v.close == 1100
 
-    v = AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-07-04'),
+    v = AssetValue.at(asset_sp500, asset_krw, parse_date('2016-07-04'),
                       approximation=True)
     assert v.close == 1100
 
     with pytest.raises(AssetValueUnavailableException):
-        AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-07-04'),
+        AssetValue.at(asset_sp500, asset_krw, parse_date('2016-07-04'),
                       approximation=False)
 
 
@@ -81,8 +81,7 @@ def test_balance(account_checking, asset_krw, asset_usd):
 
 
 def test_portfolio(account_hf, asset_hf1, account_checking, asset_krw):
-    portfolio = Portfolio()
-    portfolio.base_asset = asset_krw
+    portfolio = Portfolio.create(base_asset=asset_krw)
     portfolio.add_accounts(account_hf, account_checking)
 
     with Transaction.create() as t:
