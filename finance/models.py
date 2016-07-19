@@ -6,6 +6,7 @@ import operator
 from flask.ext.login import UserMixin
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSON
+from typedecorator import typed
 import uuid64
 
 from finance.exceptions import (
@@ -153,8 +154,10 @@ class AssetValue(db.Model, CRUDMixin):
     volume = db.Column(db.Integer)
 
     @classmethod
-    def at(cls, asset, base_asset, evaluated_at,
-           granularity=Granularity.day, approximation=False):
+    @typed
+    def at(cls: object, asset: 'Asset', base_asset: 'Asset', evaluated_at:
+           datetime, granularity: str=Granularity.day,
+           approximation: bool=False):
         """Returns an asset value evaluated at a particular date/time.
 
         :param asset_id:

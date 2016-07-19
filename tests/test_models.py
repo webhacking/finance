@@ -5,7 +5,7 @@ from finance.models import *  # noqa
 from finance.utils import parse_date
 
 
-def test_asset_value_at(asset_krw, asset_sp500):
+def test_asset_value_at(asset_krw, asset_sp500, account_checking):
     AssetValue.create(
         evaluated_at=parse_date('2016-07-01'), asset=asset_sp500,
         base_asset=asset_krw, granularity=Granularity.day, close=1000)
@@ -35,6 +35,25 @@ def test_asset_value_at(asset_krw, asset_sp500):
     with pytest.raises(AssetValueUnavailableException):
         AssetValue.at(asset_sp500, asset_krw, parse_date('2016-07-04'),
                       approximation=False)
+
+
+def test_asset_value_at_with_type_error(asset_sp500, asset_krw):
+    date = parse_date('2016-07-01')
+
+    with pytest.raises(TypeError):
+        AssetValue.at(0, asset_krw, date)
+
+    with pytest.raises(TypeError):
+        AssetValue.at(asset_sp500, 0, date)
+
+    with pytest.raises(TypeError):
+        AssetValue.at(asset_sp500, asset_krw, 0)
+
+    with pytest.raises(TypeError):
+        AssetValue.at(asset_sp500, asset_krw, date, 0)
+
+    with pytest.raises(TypeError):
+        AssetValue.at(asset_sp500, asset_krw, date, Granularity.day, 0)
 
 
 def test_get_asset_by_fund_code(asset_sp500):
