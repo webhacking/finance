@@ -152,6 +152,40 @@ class AssetValue(db.Model, CRUDMixin):
     close = db.Column(db.Numeric(precision=20, scale=4))
     volume = db.Column(db.Integer)
 
+    @classmethod
+    def at(cls, asset_id, base_asset_id, evaluated_at,
+           granularity=Granularity.day, approximation=True):
+        """Returns an asset value evaluated at a particular date/time."""
+        if not evaluated_at:
+            evaluated_at = datetime.utcnow()
+
+        if granularity == Granularity.day:
+            # NOTE: Any better way to handle this?
+            date = evaluated_at.date().timetuple()[:6]
+            evaluated_at = datetime(*date)
+        else:
+            raise NotImplementedError
+
+        asset_value = cls.query \
+            .filter(cls.asset_id == asset_id,
+                    cls.granularity == granularity,
+                    cls.base_asset_id == base_asset_id)
+
+        if approximation:
+            asset_value = asset_value.filter(
+                cls.evaluated_at <= evaluated_at) \
+                .order_by(cls.evaluated_at.desc())
+        else:
+            asset_value = asset_value.filter(
+                cls.evaluated_at == evaluated_at)
+
+        asset_value = asset_value.first()
+
+        if asset_value:
+            return asset_value
+        else:
+            raise AssetValueUnavailableException()
+
 
 class AssetType(object):
     currency = 'currency'

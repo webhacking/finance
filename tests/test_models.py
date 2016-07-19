@@ -5,6 +5,38 @@ from finance.models import *  # noqa
 from finance.utils import parse_date
 
 
+def test_asset_value_at(asset_krw, asset_sp500):
+    AssetValue.create(
+        evaluated_at=parse_date('2016-07-01'), asset=asset_sp500,
+        base_asset=asset_krw, granularity=Granularity.day, close=1000)
+    AssetValue.create(
+        evaluated_at=parse_date('2016-07-02'), asset=asset_sp500,
+        base_asset=asset_krw, granularity=Granularity.day, close=980)
+    AssetValue.create(
+        evaluated_at=parse_date('2016-07-03'), asset=asset_sp500,
+        base_asset=asset_krw, granularity=Granularity.day, close=1100)
+
+    with pytest.raises(AssetValueUnavailableException):
+        AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-06-30'))
+
+    v = AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-07-01'))
+    assert v.close == 1000
+
+    v = AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-07-02'))
+    assert v.close == 980
+
+    v = AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-07-03'))
+    assert v.close == 1100
+
+    v = AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-07-04'),
+                      approximation=True)
+    assert v.close == 1100
+
+    with pytest.raises(AssetValueUnavailableException):
+        AssetValue.at(asset_sp500.id, asset_krw.id, parse_date('2016-07-04'),
+                      approximation=False)
+
+
 def test_get_asset_by_fund_code(asset_sp500):
     asset = get_asset_by_fund_code('KR5223941018')
     assert asset.name == 'KB Star S&P500'
