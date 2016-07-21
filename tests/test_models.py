@@ -369,3 +369,41 @@ def test_record_type_enum():
 
     with pytest.raises(AttributeError):
         RecordType.steal
+
+
+def test_simple_return(asset_krw, asset_sp500,
+                       account_checking, account_sp500):
+
+    def insert_record(str_date, account, asset, quantity):
+        return Record.create(
+            created_at=parse_date(str_date),
+            account=account,
+            asset=asset,
+            quantity=quantity)
+
+    def insert_asset_value(str_date, asset, base_asset, close):
+        return AssetValue.create(
+            evaluated_at=parse_date(str_date),
+            asset=asset,
+            base_asset=base_asset,
+            close=close)
+
+    portfolio = Portfolio.create(base_asset=asset_krw)
+    portfolio.add_accounts(account_checking, account_sp500)
+
+    insert_asset_value('2015-07-01', asset_sp500, asset_krw, 1000)
+    insert_record('2015-07-01', account_sp500, asset_sp500, 10)
+    insert_record('2015-07-01', account_checking, asset_krw, -1000 * 10)
+
+    assert portfolio.net_worth(
+        evaluated_at=parse_date('2015-07-01')) == 0
+
+    insert_asset_value('2016-07-01', asset_sp500, asset_krw, 1200)
+    insert_record('2016-07-01', account_sp500, asset_sp500, -10)
+    insert_record('2016-07-01', account_checking, asset_krw, 1200 * 10)
+
+    assert portfolio.net_worth(
+        evaluated_at=parse_date('2016-07-01')) == 200 * 10
+
+    db.session.delete(portfolio)
+    db.session.commit()
