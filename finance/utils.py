@@ -265,6 +265,15 @@ def insert_record(row, account, asset, transaction):
         created_at=created_at, category=category, quantity=quantity)
 
 
+def simple_return(p0, p1):
+    """Calculates a simple rate of return.
+
+    :param p0: Buying (initial) price
+    :param p1: Selling price
+    """
+    return (p1 - p0) / p0
+
+
 class DictReader(object):
     def __init__(self, value):
         if not isinstance(value, dict):

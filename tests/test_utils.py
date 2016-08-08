@@ -159,3 +159,12 @@ def test_parse_stock_records():
 
     if flag:
         pytest.fail('No data was read.')
+
+
+@pytest.mark.parametrize('p0, p1, r', [
+    (1000, 2000, 1.0),
+    (1000, 1100, 0.1),
+    (1000, 900, -0.1)
+])
+def test_simple_return(p0, p1, r):
+    assert r == simple_return(p0, p1)
