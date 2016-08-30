@@ -166,5 +166,14 @@ def test_parse_stock_records():
     (1000, 1100, 0.1),
     (1000, 900, -0.1)
 ])
-def test_simple_return(p0, p1, r):
-    assert r == simple_return(p0, p1)
+def test_simple_return(delta_assert, p0, p1, r):
+    delta_assert(simple_return(p0, p1), r)
+
+
+@pytest.mark.parametrize('v0, v1, t, r', [
+    (1000, 1200, 365, 0.2),
+    (1000, 800, 365, -0.2),
+    (1000, 1100, 180, 0.2132),
+])
+def test_cagr(delta_assert, v0, v1, t, r):
+    delta_assert(cagr(v0, v1, t), r)

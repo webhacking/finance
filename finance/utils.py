@@ -274,6 +274,17 @@ def simple_return(p0, p1):
     return (p1 - p0) / p0
 
 
+def cagr(v0, v1, t):
+    """Calculates the compounded annual growth rate.
+
+    :param v0: Beginning value
+    :param v1: Ending value
+    :param t: Number of days
+    """
+    # FIXME: Number of days in a year could be 365 or 366
+    return (v1 / v0) ** (1.0 / (t / 365.0)) - 1
+
+
 class DictReader(object):
     def __init__(self, value):
         if not isinstance(value, dict):

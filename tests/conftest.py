@@ -52,6 +52,13 @@ def db(app, request):
     return _db
 
 
+@pytest.fixture
+def delta_assert():
+    def f(x, y, delta=0.0001):
+        assert abs(x - y) <= delta
+    return f
+
+
 @pytest.fixture(scope='function')
 def account_checking(request, db):
     account = Account.create(type='checking', name='신한은행 입출금')
