@@ -4,7 +4,7 @@ import os
 import pytest
 from requests.exceptions import HTTPError
 
-from finance.providers import _8Percent, Dart, Kofia, Yahoo
+from finance.providers import _8Percent, Dart, GSpread, Kofia, Yahoo
 from finance.providers.dart import Report as DartReport
 from finance.utils import parse_date
 
@@ -184,3 +184,15 @@ def test_dart_fetch_data_with_invalid_code():
     provider = Dart()
     with pytest.raises(ValueError):
         list(provider.fetch_reports('_', '_'))
+
+
+def test_gspread_provider():
+    provider = GSpread()
+    data = provider.fetch_data()
+
+    total_amount = 0
+    for date, name, amount, currency in data:
+        total_amount += amount
+        print(date, name, amount, currency)
+
+    print(total_amount)
