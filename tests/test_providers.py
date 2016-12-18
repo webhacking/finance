@@ -186,6 +186,12 @@ def test_dart_fetch_data_with_invalid_code():
         list(provider.fetch_reports('_', '_'))
 
 
+@pytest.mark.skipif(
+    'GSPREAD_KEY_FILE_PATH' not in os.environ,
+    reason='Google API key file path is not provided.')
+@pytest.mark.skipif(
+    'GSPREAD_DOC_KEY' not in os.environ,
+    reason='Google Spreadsheet document key is not provided.')
 def test_gspread_provider():
     provider = GSpread()
     data = provider.fetch_data()
