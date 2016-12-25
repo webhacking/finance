@@ -22,6 +22,12 @@ class GSpread(Provider):
             key_file_path, self.scopes)
         self.gc = gspread.authorize(credentials)
 
+    def parse_int(self, raw):
+        try:
+            return int(extract_numbers(raw))
+        except ValueError:
+            return 0
+
     def fetch_data(self):
         if self.gc is None:
             self.auth()
@@ -36,11 +42,26 @@ class GSpread(Provider):
         # containing all cell values. This may have significant performance
         # implications.
         for record in sheet.get_all_records():
-            invested_amount = record['Invested']
-            if invested_amount:
-                # NOTE: int() or float()?
-                invested_amount = int(extract_numbers(invested_amount))
-                date = parse_date(record['Date'], DATE_FORMAT)
-                bond_name = record['Name']
+            bond_name = record['Name']
+            if not bond_name:
+                continue
 
-                yield date, bond_name, invested_amount, currency
+            date = parse_date(record['Date'], DATE_FORMAT)
+            invested_amount = self.parse_int(record['Invested'])
+            returned_amount = self.parse_int(record['Returned'])
+
+            if invested_amount:
+                yield 'invested', date, bond_name, invested_amount, 0, 0, 0, \
+                    currency
+            elif returned_amount:
+                principle = self.parse_int(record['Returned Principle'])
+                interest = self.parse_int(record['Returned Interest'])
+                tax = self.parse_int(record['Tax'])
+                fees = self.parse_int(record['Fees'])
+
+                assert principle + interest - tax - fees == returned_amount, \
+                    'Incorrect returned amount: {} {}'.format(
+                        date, bond_name)
+
+                yield 'returned', date, bond_name, principle, interest, tax, \
+                    fees, currency

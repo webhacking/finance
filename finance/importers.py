@@ -1,11 +1,13 @@
 """A collection of data import functions."""
 from datetime import datetime
+import hashlib
 
 from typedecorator import typed
+import uuid64
 
 from finance.models import Asset, AssetValue, get_asset_by_stock_code, \
     Granularity
-from finance.providers import Yahoo
+from finance.providers import GSpread, Yahoo
 from finance.utils import DictReader
 
 
@@ -62,6 +64,18 @@ def import_stock_values(code: str, from_date: datetime, to_date: datetime):
     asset = get_asset_by_stock_code(code)
     data = provider.fetch_data(code, from_date, to_date)
     for date, open_, high, low, close_, volume, adj_close in data:
+        AssetValue.create(
+            evaluated_at=date, granularity=Granularity.day, asset=asset,
+            open=open_, high=high, low=low, close=close_, volume=volume)
+
+
+def import_gspread_data():
+    provider = GSpread()
+    data = provider.fetch_data()
+    for category, date, bond_name, principle, interest, tas, fees, currency in data:
+        hashed_name = hashlib.sha1(bond_name.encode('utf-8'))
+        int_hash = int.from_bytes(hashed_name.digest(), byteorder='little')
+        asset = Asset.create(name=bond_name, type=AssetType.p2p_bond)
         AssetValue.create(
             evaluated_at=date, granularity=Granularity.day, asset=asset,
             open=open_, high=high, low=low, close=close_, volume=volume)

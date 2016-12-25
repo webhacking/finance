@@ -197,8 +197,11 @@ def test_gspread_provider():
     data = provider.fetch_data()
 
     total_amount = 0
-    for date, name, amount, currency in data:
-        total_amount += amount
-        print(date, name, amount, currency)
+    for category, date, name, principle, interest, tax, fees, currency in data:
+        total_amount += principle
+        print(date, name, principle, currency)
 
     print(total_amount)
+
+    from finance.importers import import_gspread_data
+    import_gspread_data()
