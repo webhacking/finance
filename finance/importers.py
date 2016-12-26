@@ -3,9 +3,11 @@ from datetime import datetime
 import hashlib
 
 from typedecorator import typed
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import FlushError
 import uuid64
 
-from finance.models import Asset, AssetType, AssetValue, \
+from finance.models import Asset, AssetType, AssetValue, db, \
     get_asset_by_stock_code, Granularity, Transaction, Record
 from finance.providers import GSpread, Yahoo
 from finance.utils import DictReader
@@ -74,7 +76,13 @@ def import_gspread_data(asset_krw):
 
         hashed_name = hashlib.sha1(bond_name.encode('utf-8'))
         int_hash = int.from_bytes(hashed_name.digest(), byteorder='little')
-        asset = Asset.create(name=bond_name, type=AssetType.p2p_bond)
+        uuid = int_hash & 0x7FFFFFFFFFFFFFFF
+        try:
+            asset = Asset.create(
+                id=uuid, name=bond_name, type=AssetType.p2p_bond)
+        except (FlushError, IntegrityError):
+            db.session.rollback()
+            asset = Asset.get(id=uuid)
 
         if category == 'invested':
             AssetValue.create(

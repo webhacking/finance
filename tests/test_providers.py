@@ -186,13 +186,14 @@ def test_dart_fetch_data_with_invalid_code():
         list(provider.fetch_reports('_', '_'))
 
 
-@pytest.mark.skipif(
-    'GSPREAD_KEY_FILE_PATH' not in os.environ,
-    reason='Google API key file path is not provided.')
-@pytest.mark.skipif(
+skip_gspread = pytest.mark.skipif(
+    'GSPREAD_KEY_FILE_PATH' not in os.environ or
     'GSPREAD_DOC_KEY' not in os.environ,
-    reason='Google Spreadsheet document key is not provided.')
-def test_gspread_provider(app, db, asset_krw):
+    reason='Google Spreadsheet credentials are not provided')
+
+
+@skip_gspread
+def test_gspread_provider():
     provider = GSpread()
     data = provider.fetch_data()
 
@@ -203,5 +204,8 @@ def test_gspread_provider(app, db, asset_krw):
 
     print(total_amount)
 
+
+@skip_gspread
+def test_import_gspread_data(app, db, asset_krw):
     from finance.importers import import_gspread_data
     import_gspread_data(asset_krw)
