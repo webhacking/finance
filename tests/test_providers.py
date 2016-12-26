@@ -192,7 +192,7 @@ def test_dart_fetch_data_with_invalid_code():
 @pytest.mark.skipif(
     'GSPREAD_DOC_KEY' not in os.environ,
     reason='Google Spreadsheet document key is not provided.')
-def test_gspread_provider():
+def test_gspread_provider(app, db, asset_krw):
     provider = GSpread()
     data = provider.fetch_data()
 
@@ -204,4 +204,4 @@ def test_gspread_provider():
     print(total_amount)
 
     from finance.importers import import_gspread_data
-    import_gspread_data()
+    import_gspread_data(asset_krw)

@@ -5,17 +5,14 @@ import hashlib
 from typedecorator import typed
 import uuid64
 
-from finance.models import Asset, AssetValue, get_asset_by_stock_code, \
-    Granularity
+from finance.models import Asset, AssetType, AssetValue, \
+    get_asset_by_stock_code, Granularity, Transaction, Record
 from finance.providers import GSpread, Yahoo
 from finance.utils import DictReader
 
 
 def import_8percent_data(parsed_data, account_checking, account_8p, asset_krw):
     """Import 8percent `AssetValue`s and `Record`s altogether."""
-    from finance.models import Asset, AssetType, AssetValue, Record, \
-        Transaction
-
     assert account_checking
     assert account_8p
     assert asset_krw
@@ -69,13 +66,34 @@ def import_stock_values(code: str, from_date: datetime, to_date: datetime):
             open=open_, high=high, low=low, close=close_, volume=volume)
 
 
-def import_gspread_data():
+def import_gspread_data(asset_krw):
     provider = GSpread()
     data = provider.fetch_data()
-    for category, date, bond_name, principle, interest, tas, fees, currency in data:
+    for category, date, bond_name, principle, interest, tas, fees, currency \
+            in data:
+
         hashed_name = hashlib.sha1(bond_name.encode('utf-8'))
         int_hash = int.from_bytes(hashed_name.digest(), byteorder='little')
         asset = Asset.create(name=bond_name, type=AssetType.p2p_bond)
-        AssetValue.create(
-            evaluated_at=date, granularity=Granularity.day, asset=asset,
-            open=open_, high=high, low=low, close=close_, volume=volume)
+
+        if category == 'invested':
+            AssetValue.create(
+                evaluated_at=date, granularity=Granularity.day, asset=asset,
+                close=principle)
+
+            with Transaction.create() as t:
+                Record.create(
+                    created_at=date, transaction=t, asset=asset, quantity=1)
+                Record.create(
+                    created_at=date, transaction=t, asset=asset_krw,
+                    quantity=-principle)
+
+        elif category == 'returned':
+            AssetValue.create(
+                evaluated_at=date, granularity=Granularity.day, asset=asset,
+                close=principle)
+            Record.create(
+                created_at=date, asset=asset_krw, quantity=principle)
+
+        else:
+            raise ValueError('Invalid category: {}'.format(category))
