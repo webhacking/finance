@@ -304,6 +304,27 @@ def import_stock_values(code, from_date, to_date):
 
 @cli.command()
 @click.argument('filename')
+def import_stock_symbols(filename):
+    """Import stock symbols (e.g., 007070.KS = GS리테일)"""
+    app = create_app(__name__)
+    with app.app_context():
+        with open(filename) as fin:
+            for line in fin.readlines():
+                code, name = map(str.strip, line.split('\t'))
+
+                log.info('Importing {} ({})...', code, name)
+                try:
+                    Asset.create(
+                        type=AssetType.stock,
+                        code=code,
+                        name=name
+                    )
+                except IntegrityError:
+                    db.session.rollback()
+
+
+@cli.command()
+@click.argument('filename')
 def import_stock_records(filename):
     """Parses exported data from the Shinhan HTS."""
     app = create_app(__name__)

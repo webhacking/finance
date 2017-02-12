@@ -3,8 +3,9 @@ from datetime import datetime
 
 from typedecorator import typed
 
-from finance.models import Asset, AssetValue, get_asset_by_stock_code, \
-    Granularity
+from finance.models import (
+    Asset, AssetType, AssetValue, get_asset_by_stock_code, Granularity
+)
 from finance.providers import Yahoo
 from finance.utils import DictReader
 

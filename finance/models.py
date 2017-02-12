@@ -173,7 +173,7 @@ class Asset(db.Model, CRUDMixin):
 
     type = db.Column(db.Enum(*asset_types, name='asset_type'))
     name = db.Column(db.String)
-    code = db.Column(db.String)
+    code = db.Column(db.String, unique=True)
     description = db.Column(db.Text)
 
     #: Arbitrary data
