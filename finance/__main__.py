@@ -57,9 +57,12 @@ def insert_stock_assets():
         ('069500.KS', 'KODEX 200'),
     ]
 
-    for code, description in rows:
-        log.info('Inserting {} ({})...', code, description)
-        yield Asset.create(type='stock', code=code, description=description)
+    for code, name in rows:
+        log.info('Inserting {} ({})...', code, name)
+        try:
+            yield Asset.create(type=AssetType.stock, code=code, name=name)
+        except IntegrityError:
+            db.session.rollback()
 
 
 @click.group()
