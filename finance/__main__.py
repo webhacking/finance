@@ -9,7 +9,8 @@ from sqlalchemy.exc import IntegrityError
 from finance import create_app
 from finance.importers import \
     import_8percent_data, \
-    import_stock_values as import_stock_values_  # Avoid name clashes
+    import_stock_values as import_stock_values_, \
+    import_gspread_data as import_gspread_data_
 from finance.models import (
     Account, Asset, AssetValue, DartReport, db, get_asset_by_fund_code,
     Granularity, Portfolio, Record, Transaction, User)
@@ -341,6 +342,12 @@ def import_stock_records(filename):
             for parsed in parse_stock_records(fin):
                 insert_stock_record(parsed, account_stock, account_bank)
 
+
+@cli.command()
+def import_gspread_data():
+    app = create_app(__name__)
+    with app.app_context():
+        import_gspread_data_()
 
 if __name__ == '__main__':
     cli()
