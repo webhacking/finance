@@ -46,6 +46,7 @@ class Yahoo(AssetValueProvider):
     @typed
     def fetch_data(self: object, code: str, from_date: datetime,
                    to_date: datetime):
+        # NOTE: from_date.year and to_date.year seem like they have no effect
         params = self.request_params(code, from_date.year, to_date.year)
         resp = requests.get(self.request_url, headers=self.request_headers,
                             params=params)
