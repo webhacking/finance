@@ -65,9 +65,14 @@ def import_stock_values(code: str, from_date: datetime, to_date: datetime):
     provider = Yahoo()
     asset = get_asset_by_stock_code(code)
     data = provider.fetch_data(code, from_date, to_date)
+
+    # NOTE: Any better way to handle this?
+    asset_krw = Asset.query.filter_by(name='KRW').first()
+
     for date, open_, high, low, close_, volume, adj_close in data:
         log.info('AssetValue(date={}, asset={}, open={}, close={}',
                  date, asset, open_, close_)
         AssetValue.create(
             evaluated_at=date, granularity=Granularity.day, asset=asset,
-            open=open_, high=high, low=low, close=close_, volume=volume)
+            base_asset=asset_krw, open=open_, high=high, low=low, close=close_,
+            volume=volume)
