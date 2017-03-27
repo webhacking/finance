@@ -49,14 +49,14 @@ def insert_stock_assets():
     fetched automatically on the fly.
     """
     rows = [
-        # ('036570.KS', 'NCsoft Corporation'),
-        # ('145210.KS', 'SAEHWA IMC'),
-        # ('069080.KQ', 'Webzen'),
-        # ('053800.KQ', 'Ahnlab Inc.'),
-        # ('017670.KS', 'SK Telecom Co. Ltd.'),
-        # ('005380.KS', 'Hyundai Motor Company'),
-        # ('056080.KQ', 'Yujin Robot Co., Ltd.'),
-        # ('069500.KS', 'KODEX 200'),
+        ('036570.KS', 'NCsoft Corporation'),
+        ('145210.KS', 'SAEHWA IMC'),
+        ('069080.KQ', 'Webzen'),
+        ('053800.KQ', 'Ahnlab Inc.'),
+        ('017670.KS', 'SK Telecom Co. Ltd.'),
+        ('005380.KS', 'Hyundai Motor Company'),
+        ('056080.KQ', 'Yujin Robot Co., Ltd.'),
+        ('069500.KS', 'KODEX 200'),
         ('027410.KS', 'BGF리테일'),
     ]
 
