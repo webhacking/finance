@@ -12,7 +12,7 @@ from finance.importers import \
     import_stock_values as import_stock_values_  # Avoid name clashes
 from finance.models import (
     Account, Asset, AssetValue, DartReport, db, get_asset_by_fund_code,
-    Granularity, Portfolio, Record, Transaction, User)
+    get_asset_by_stock_code, Granularity, Portfolio, Record, Transaction, User)
 from finance.providers import _8Percent, Dart, Kofia
 from finance.utils import (
     extract_numbers, get_dart_code, insert_asset, insert_record,
@@ -37,7 +37,7 @@ def insert_accounts(user):
         id=7003, type='investment', name='키움일본인덱스 주식재간접',
         user=user)
     yield Account.create(
-        id=8003, type='investment', name='신한 주식', user=user)
+        id=8003, type='investment', name='미래에셋 주식', user=user)
     yield Account.create(
         id=8001, type='virtual', name='8퍼센트', user=user)
     yield Account.create(
@@ -49,19 +49,33 @@ def insert_stock_assets():
     fetched automatically on the fly.
     """
     rows = [
-        ('036570.KS', 'NCsoft Corporation'),
-        ('145210.KS', 'SAEHWA IMC'),
-        ('069080.KQ', 'Webzen'),
-        ('053800.KQ', 'Ahnlab Inc.'),
-        ('017670.KS', 'SK Telecom Co. Ltd.'),
-        ('005380.KS', 'Hyundai Motor Company'),
-        ('056080.KQ', 'Yujin Robot Co., Ltd.'),
-        ('069500.KS', 'KODEX 200'),
+        # ('036570.KS', 'NCsoft Corporation'),
+        # ('145210.KS', 'SAEHWA IMC'),
+        # ('069080.KQ', 'Webzen'),
+        # ('053800.KQ', 'Ahnlab Inc.'),
+        # ('017670.KS', 'SK Telecom Co. Ltd.'),
+        # ('005380.KS', 'Hyundai Motor Company'),
+        # ('056080.KQ', 'Yujin Robot Co., Ltd.'),
+        # ('069500.KS', 'KODEX 200'),
+        ('027410.KS', 'BGF리테일'),
     ]
 
     for code, description in rows:
         log.info('Inserting {} ({})...', code, description)
         yield Asset.create(type='stock', code=code, description=description)
+
+
+def insert_stock_records(account):
+    """Insert sample trading records."""
+    def insert(date, quantity, asset, account):
+        return Record.create(
+            created_at=date,
+            quantity=quantity,
+            asset=asset,
+            account=account)
+
+    insert('2016-12-01', 14, get_asset_by_stock_code('027410.KS'), account)
+    import_stock_values_('027410.KS', parse_date(-90), parse_date(0))
 
 
 @click.group()
@@ -104,6 +118,8 @@ def insert_test_data():
         insert_asset('security, 키움일본인덱스,',
                      data={'code': 'KR5206689717'})
         insert_asset('bond, 포트폴리오 투자상품 1호,')
+
+        insert_stock_records(account_stock)
 
         portfolio = Portfolio()
         portfolio.base_asset = asset_krw

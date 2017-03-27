@@ -1,12 +1,16 @@
 """A collection of data import functions."""
 from datetime import datetime
 
+from logbook import Logger
 from typedecorator import typed
 
 from finance.models import Asset, AssetValue, get_asset_by_stock_code, \
     Granularity
 from finance.providers import Yahoo
 from finance.utils import DictReader
+
+
+log = Logger(__name__)
 
 
 def import_8percent_data(parsed_data, account_checking, account_8p, asset_krw):
@@ -62,6 +66,8 @@ def import_stock_values(code: str, from_date: datetime, to_date: datetime):
     asset = get_asset_by_stock_code(code)
     data = provider.fetch_data(code, from_date, to_date)
     for date, open_, high, low, close_, volume, adj_close in data:
+        log.info('AssetValue(date={}, asset={}, open={}, close={}',
+                 date, asset, open_, close_)
         AssetValue.create(
             evaluated_at=date, granularity=Granularity.day, asset=asset,
             open=open_, high=high, low=low, close=close_, volume=volume)
