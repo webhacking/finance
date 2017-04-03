@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 from logbook import Logger
-from typedecorator import typed
 
 # NOTE: finance.models should not be imported here in order to avoid circular
 # depencencies
@@ -159,7 +158,6 @@ def parse_stock_records(stream):
         }
 
 
-@typed
 def insert_stock_record(data: dict, stock_account: object,
                         bank_account: object):
     """
@@ -182,7 +180,6 @@ def insert_stock_record(data: dict, stock_account: object,
         return None
 
 
-@typed
 def insert_stock_trading_record(data: dict, stock_account: object):
     """Inserts a stock trading (i.e., buying or selling stocks) records."""
     from finance.models import get_asset_by_stock_code, Record
@@ -211,7 +208,6 @@ def insert_stock_trading_record(data: dict, stock_account: object):
     )
 
 
-@typed
 def insert_stock_transfer_record(data: dict, bank_account: object):
     """Inserts a transfer record between a bank account and a stock account.
     """
