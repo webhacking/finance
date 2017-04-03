@@ -75,6 +75,7 @@ def insert_stock_records(account):
             account=account)
 
     insert('2016-12-01', 14, get_asset_by_stock_code('027410.KS'), account)
+    insert('2017-01-03', 8, get_asset_by_stock_code('027410.KS'), account)
     import_stock_values_('027410.KS', parse_date(-90), parse_date(0))
 
 
