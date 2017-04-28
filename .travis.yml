@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 
 language: python
 python:
@@ -15,6 +15,9 @@ env:
     - DB_URL="postgres:///finance"
     - TEST_DB_URL="postgres:///finance"
     - PYTHONPATH=.
+    - DB_URL="postgres:///finance"
+    - GOROOT="$HOME/go"
+    - GOPATH="$(pwd)/goport:$HOME/go"
 
 jobs:
   include:
@@ -34,3 +37,15 @@ jobs:
         - py.test -v tests --cov finance --cov-report term-missing
       after_success:
         - coveralls
+    - stage: go build
+      install:
+        - curl -O https://storage.googleapis.com/golang/go1.8.1.linux-amd64.tar.gz
+        - tar -C $HOME -xzf go1.8.1.linux-amd64.tar.gz
+        - go list -f '{{range .Imports}}{{.}} {{end}}' finance | xargs go get
+        - go list -f '{{range .TestImports}}{{.}} {{end}}' finance | xargs go get
+      before_script:
+        - psql -c 'DROP DATABASE finance; CREATE DATABASE finance;' -U postgres
+        - finance create_all
+        - go version
+      script:
+        - cd goport && go test finance -v
