@@ -20,6 +20,7 @@ env:
     - GOPATH="$(pwd)/goport:$HOME/go"
     - PATH="$HOME/go/bin:$PATH"
 
+<<<<<<< HEAD
 jobs:
   include:
     - stage: type checking
@@ -47,6 +48,6 @@ jobs:
         - go version
       before_script:
         - psql -c 'DROP DATABASE finance; CREATE DATABASE finance;' -U postgres
-        - finance create_all
+        - cd goport && go test finance -run 'CreateTables'
       script:
         - cd goport && go test finance -v
