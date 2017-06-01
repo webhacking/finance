@@ -507,18 +507,25 @@ class Record(CRUDMixin, db.Model):
 
     # NOTE: Is this okay to do this?
     __table_args__ = (db.UniqueConstraint(
-        'account_id', 'asset_id', 'created_at', 'quantity'), {})
+        'account_id', 'asset_id', 'created_at', 'seq', 'quantity'), {})
 
     account_id = db.Column(db.BigInteger, db.ForeignKey('account.id'))
     asset_id = db.Column(db.BigInteger, db.ForeignKey('asset.id'))
     # asset = db.relationship(Asset, uselist=False)
     transaction_id = db.Column(db.BigInteger, db.ForeignKey('transaction.id'))
+
     #: RecordType
     type = db.Column(db.Enum(*record_types, name='record_type'))
+
     # NOTE: We'll always use the UTC time
     created_at = db.Column(db.DateTime(timezone=False))
+
+    #: An internal sequence number
+    seq = db.Column(db.Integer)
+
     # NOTE: What is this for?
     category = db.Column(db.String)
+
     quantity = db.Column(db.Numeric(precision=20, scale=4))
 
     def __init__(self, *args, **kwargs):
