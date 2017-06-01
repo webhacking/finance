@@ -241,6 +241,30 @@ def _parse_miraeasset_data(filename, parse_func):
             writer.writerow(record.values())
 
 
+def _import_miraeasset_data(filename, parse_func, account):
+    with open(filename) as fin:
+        records = parse_func(fin)
+        for record in records:
+            if record.category not in ['주식매수', '주식매도',
+                                       '해외주매수', '해외주매도']:
+                log.warn('Unhandled record category: {}', record.category)
+                continue
+
+            try:
+                Record.create(
+                    account=account,
+                    asset=Asset.get_by_isin(record.code),
+                    # TODO: Figure out record type
+                    created_at=record.created_at,
+                    seq=record.seq,
+                    # TODO: Figure out record category
+                    quantity=record.quantity,
+                )
+            except IntegrityError:
+                log.info('Record {} already exists.', record)
+                db.session.rollback()
+
+
 @cli.command()
 @click.argument('filename')
 def parse_miraeasset_foreign_data(filename):
@@ -259,10 +283,20 @@ def parse_miraeasset_local_data(filename):
 
 @cli.command()
 @click.argument('filename')
-def import_miraeasset_foreign_data(filename):
-    """Imports a CSV file exported in 해외거래내역 (9465)."""
-    provider = Miraeasset()
-    _import_miraeasset_data(filename, provider.parse_foreign_transactions)
+@click.argument('account_name')
+def import_miraeasset_foreign_data(filename, account_name):
+    """Imports a CSV file exported in 해외거래내역 (9465).
+
+    Usage example:
+
+        finance import_miraeasset_foreign_data ${csv_file} ${account_name}
+
+    """
+    with create_app(__name__).app_context():
+        provider = Miraeasset()
+        account = Account.get_by_name(account_name)
+        _import_miraeasset_data(filename, provider.parse_foreign_transactions,
+                                account)
 
 
 @cli.command()
