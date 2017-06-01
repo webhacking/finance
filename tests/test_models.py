@@ -12,7 +12,7 @@ def test_get_asset_by_fund_code(asset_sp500):
 
 def test_get_asset_by_fund_code_non_existing(asset_sp500):
     with pytest.raises(AssetNotFoundException):
-        get_asset_by_fund_code('non-exisiting')
+        get_asset_by_fund_code('non-existing')
 
 
 def test_get_asset_by_symbol(asset_stock_ncsoft):
@@ -22,7 +22,7 @@ def test_get_asset_by_symbol(asset_stock_ncsoft):
 
 def test_get_asset_by_symbol_non_existing(asset_sp500):
     with pytest.raises(AssetNotFoundException):
-        Asset.get_by_symbol('non-exisiting')
+        Asset.get_by_symbol('non-existing')
 
 
 def test_get_asset_by_isin(asset_stock_nvda):
@@ -32,7 +32,17 @@ def test_get_asset_by_isin(asset_stock_nvda):
 
 def test_get_asset_by_isin_non_existing(asset_stock_nvda):
     with pytest.raises(AssetNotFoundException):
-        Asset.get_by_isin('non-exisiting')
+        Asset.get_by_isin('non-existing')
+
+
+def test_get_account(account_checking):
+    account = Account.get_by_name(account_checking.name)
+    assert account.id == account_checking.id
+
+
+def test_get_account_non_existing(account_checking):
+    with pytest.raises(AccountNotFoundException):
+        account = Account.get_by_name('non-existing')
 
 
 def test_balance(account_checking, asset_krw, asset_usd):

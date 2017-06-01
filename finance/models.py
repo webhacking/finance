@@ -9,6 +9,7 @@ from sqlalchemy.dialects.postgresql import JSON
 import uuid64
 
 from finance.exceptions import (
+    AccountNotFoundException,
     AssetNotFoundException, AssetValueUnavailableException,
     InvalidTargetAssetException)
 from finance.utils import date_range
@@ -369,6 +370,14 @@ class Account(CRUDMixin, db.Model):
             net_asset_value += worth
 
         return net_asset_value
+
+    @classmethod
+    def get_by_name(cls, name):
+        account = cls.query.filter(cls.name == name).first()
+        if account is None:
+            raise AccountNotFoundException
+        else:
+            return account
 
 
 class Portfolio(CRUDMixin, db.Model):
