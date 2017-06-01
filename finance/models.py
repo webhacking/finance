@@ -239,7 +239,7 @@ class Asset(CRUDMixin, db.Model):
         """
         asset = cls.query.filter(cls.code == symbol).first()
         if asset is None:
-            raise AssetNotFoundException
+            raise AssetNotFoundException(symbol)
         else:
             return asset
 
@@ -251,7 +251,7 @@ class Asset(CRUDMixin, db.Model):
         """
         asset = cls.query.filter(cls.isin == isin).first()
         if asset is None:
-            raise AssetNotFoundException
+            raise AssetNotFoundException(isin)
         else:
             return asset
 
