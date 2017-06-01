@@ -375,7 +375,7 @@ class Account(CRUDMixin, db.Model):
     def get_by_name(cls, name):
         account = cls.query.filter(cls.name == name).first()
         if account is None:
-            raise AccountNotFoundException
+            raise AccountNotFoundException(name)
         else:
             return account
 
