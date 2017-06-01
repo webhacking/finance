@@ -14,8 +14,8 @@ from finance.importers import \
     import_8percent_data, \
     import_stock_values as import_stock_values_  # Avoid name clashes
 from finance.models import (
-    Account, Asset, AssetValue, DartReport, db, get_asset_by_fund_code,
-    Granularity, Portfolio, Record, Transaction, User)
+    Account, AccountType, Asset, AssetValue, DartReport, db,
+    get_asset_by_fund_code, Granularity, Portfolio, Record, Transaction, User)
 from finance.providers import _8Percent, Dart, Kofia, Miraeasset, Yahoo
 from finance.utils import (
     extract_numbers, get_dart_code, insert_asset, insert_record,
@@ -27,24 +27,19 @@ log = Logger('finance')
 
 
 def insert_accounts(user):
-    yield Account.create(
-        id=1001, type='checking', name='신한은행 입출금', user=user)
-    yield Account.create(
-        id=9001, type='investment', name='Woori Gold Banking', user=user)
-    yield Account.create(
-        id=7001, type='investment', name='S&P500 Fund', user=user)
-    yield Account.create(
-        id=7002, type='investment', name='East Spring China Fund',
-        user=user)
-    yield Account.create(
-        id=7003, type='investment', name='키움일본인덱스 주식재간접',
-        user=user)
-    yield Account.create(
-        id=8003, type='investment', name='신한 주식', user=user)
-    yield Account.create(
-        id=8001, type='virtual', name='8퍼센트', user=user)
-    yield Account.create(
-        id=8002, type='virtual', name='어니스트펀드', user=user)
+    rows = [
+        (1001, AccountType.checking, '신한 입출금'),
+        (9001, AccountType.investment, 'Woori Gold Banking'),
+        (7001, AccountType.investment, 'S&P500 Fund'),
+        (7002, AccountType.investment, 'East Spring China Fund'),
+        (8004, AccountType.investment, '미래에셋대우'),
+        (8001, AccountType.virtual, '8퍼센트'),
+        (8002, AccountType.virtual, '어니스트펀드'),
+    ]
+
+    for a_id, a_type, name in rows:
+        log.info('Creating account {}', name)
+        yield Account.create(id=a_id, type=a_type, name=name, user=user)
 
 
 def insert_stock_assets():
@@ -101,7 +96,8 @@ def insert_test_data():
         user = User.create(
             family_name='Byeon', given_name='Sumin', email='suminb@gmail.com')
 
-        account_checking, _, _, _, _, account_stock, account_8p, _ = \
+        log.info('Inserting accounts...')
+        account_checking, _, _, _, account_stock, account_8p, _ = \
             insert_accounts(user)
         for _ in insert_stock_assets():
             pass

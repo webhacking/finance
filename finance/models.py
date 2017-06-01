@@ -255,6 +255,18 @@ class Asset(CRUDMixin, db.Model):
             return asset
 
 
+class AccountType(object):
+    checking = 'checking'
+    savings = 'savings'
+    investment = 'investment'
+    virtual = 'virtual'
+
+
+account_types = (
+    AccountType.checking, AccountType.savings, AccountType.investment,
+    AccountType.virtual)
+
+
 class Account(CRUDMixin, db.Model):
     """Represents an account. An account may contain multiple records based
     on different assets. For example, a single bank account may have a balance
@@ -492,9 +504,11 @@ class Record(CRUDMixin, db.Model):
     asset_id = db.Column(db.BigInteger, db.ForeignKey('asset.id'))
     # asset = db.relationship(Asset, uselist=False)
     transaction_id = db.Column(db.BigInteger, db.ForeignKey('transaction.id'))
+    #: RecordType
     type = db.Column(db.Enum(*record_types, name='record_type'))
     # NOTE: We'll always use the UTC time
     created_at = db.Column(db.DateTime(timezone=False))
+    # NOTE: What is this for?
     category = db.Column(db.String)
     quantity = db.Column(db.Numeric(precision=20, scale=4))
 
