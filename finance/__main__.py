@@ -87,6 +87,14 @@ def drop_all():
 
 
 @cli.command()
+def accounts():
+    """Displays all accounts."""
+    with create_app(__name__).app_context():
+        for account in Account.query.all():
+            print(account)
+
+
+@cli.command()
 def insert_test_data():
     app = create_app(__name__)
     with app.app_context():
