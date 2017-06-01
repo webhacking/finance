@@ -47,19 +47,28 @@ def insert_stock_assets():
     fetched automatically on the fly.
     """
     rows = [
-        ('036570.KS', 'NCsoft Corporation'),
-        ('145210.KS', 'SAEHWA IMC'),
-        ('069080.KQ', 'Webzen'),
-        ('053800.KQ', 'Ahnlab Inc.'),
-        ('017670.KS', 'SK Telecom Co. Ltd.'),
-        ('005380.KS', 'Hyundai Motor Company'),
-        ('056080.KQ', 'Yujin Robot Co., Ltd.'),
-        ('069500.KS', 'KODEX 200'),
+        ('036570.KS', None, 'NCsoft Corporation'),
+        ('145210.KS', None, 'SAEHWA IMC'),
+        ('069080.KQ', None, 'Webzen'),
+        ('053800.KQ', None, 'Ahnlab Inc.'),
+        ('017670.KS', None, 'SK Telecom Co. Ltd.'),
+        ('005380.KS', None, 'Hyundai Motor Company'),
+        ('056080.KQ', None, 'Yujin Robot Co., Ltd.'),
+        ('069500.KS', None, 'KODEX 200'),
+        ('AMD', 'US0079031078', 'Advanced Micro Devices'),
+        ('NVDA', 'US67066G1040', 'NVIDIA'),
+        ('SBUX', 'US8552441094', 'Starbucks'),
+        ('SPY', 'US78462F1030', 'SPDR S&P 500'),
+        ('ESRT', 'US2921041065', 'Empire State Realty'),
+        ('TSLA', 'US88160R1014', 'Tesla Motors'),
+        ('NUGT', 'US25490K5700', 'Direxion Daily Gold'),
+        ('ARKW', 'US00214Q4010', 'ARK Web x.0 ETF'),
+        ('AMZN', 'US0231351067', 'Amazon'),
     ]
 
-    for code, description in rows:
-        log.info('Inserting {} ({})...', code, description)
-        yield Asset.create(type='stock', code=code, description=description)
+    for symbol, isin, name in rows:
+        log.info('Inserting {} ({})...', symbol, name)
+        yield Asset.create(type='stock', code=symbol, isin=isin, name=name)
 
 
 @click.group()
