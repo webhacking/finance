@@ -20,7 +20,6 @@ env:
     - GOPATH="$(pwd)/goport:$HOME/go"
     - PATH="$HOME/go/bin:$PATH"
 
-<<<<<<< HEAD
 jobs:
   include:
     - stage: type checking
