@@ -18,8 +18,9 @@ from finance.models import (
     Granularity, Portfolio, Record, Transaction, User)
 from finance.providers import _8Percent, Dart, Google, Kofia, Miraeasset
 from finance.utils import (
-    extract_numbers, get_dart_code, insert_asset, insert_record,
-    insert_stock_record, parse_date, parse_stock_records, serialize_datetime)
+    extract_numbers, get_dart_code, insert_asset as insert_asset_,
+    insert_record, insert_stock_record, parse_date, parse_stock_records,
+    serialize_datetime)
 
 
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -53,6 +54,7 @@ def insert_stock_assets():
     """
     rows = [
         ('NASDAQ', 'NVDA', 'NVIDIA'),
+        ('KRX', '027410', 'BGF 리테일'),
     ]
 
     for market, code, description in rows:
@@ -92,19 +94,32 @@ def insert_test_data():
         for _ in insert_stock_assets():
             pass
 
-        asset_krw = insert_asset('currency, KRW, Korean Won')
-        insert_asset('currency, USD, United States Dollar')
-        insert_asset('commodity, Gold, Gold')
-        insert_asset('security, KB S&P500,', data={'code': 'KR5223941018'})
-        insert_asset('security, 이스트스프링차이나펀드,',
-                     data={'code': 'KR5229221225'})
-        insert_asset('security, 키움일본인덱스,',
-                     data={'code': 'KR5206689717'})
-        insert_asset('bond, 포트폴리오 투자상품 1호,')
+        asset_krw = insert_asset_('currency, KRW, Korean Won')
+        insert_asset_('currency, USD, United States Dollar')
+        insert_asset_('commodity, Gold, Gold')
+        insert_asset_('security, KB S&P500,', data={'code': 'KR5223941018'})
+        insert_asset_('security, 이스트스프링차이나펀드,',
+                      data={'code': 'KR5229221225'})
+        insert_asset_('security, 키움일본인덱스,',
+                      data={'code': 'KR5206689717'})
+        insert_asset_('bond, 포트폴리오 투자상품 1호,')
 
         portfolio = Portfolio()
         portfolio.base_asset = asset_krw
         portfolio.add_accounts(account_checking, account_stock, account_8p)
+
+
+@cli.command()
+@click.argument('type')
+@click.argument('market')
+@click.argument('code')
+@click.argument('description')
+def insert_asset(type, market, code, description):
+    with create_app(__name__).app_context():
+        # FIXME: Check for duplicates
+        log.info('Inserting {}:{} ({})...', market, code, description)
+        Asset.create(type=type, market=market, code=code,
+                     description=description)
 
 
 @cli.command()
