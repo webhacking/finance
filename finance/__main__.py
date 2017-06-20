@@ -52,19 +52,13 @@ def insert_stock_assets():
     fetched automatically on the fly.
     """
     rows = [
-        ('036570.KS', 'NCsoft Corporation'),
-        ('145210.KS', 'SAEHWA IMC'),
-        ('069080.KQ', 'Webzen'),
-        ('053800.KQ', 'Ahnlab Inc.'),
-        ('017670.KS', 'SK Telecom Co. Ltd.'),
-        ('005380.KS', 'Hyundai Motor Company'),
-        ('056080.KQ', 'Yujin Robot Co., Ltd.'),
-        ('069500.KS', 'KODEX 200'),
+        ('NASDAQ', 'NVDA', 'NVIDIA'),
     ]
 
-    for code, description in rows:
-        log.info('Inserting {} ({})...', code, description)
-        yield Asset.create(type='stock', code=code, description=description)
+    for market, code, description in rows:
+        log.info('Inserting {}:{} ({})...', market, code, description)
+        yield Asset.create(type='stock', market=market, code=code,
+                           description=description)
 
 
 @click.group()
@@ -375,17 +369,18 @@ def import_fund(code, from_date, to_date):
 
 
 @cli.command()
+@click.argument('market')
 @click.argument('code')
-@click.argument('from-date')
-@click.argument('to-date')
-def import_stock_values(code, from_date, to_date):
+@click.option('--from-date', default=-365)
+@click.option('--to-date', default=0)
+def import_stock_values(market, code, from_date, to_date):
     """Import stock price information."""
-    app = create_app(__name__)
-    with app.app_context():
+    with create_app(__name__).app_context():
         # NOTE: We assume all Asset records are already in the database, but
         # this is a temporary workaround. We should implement some mechanism to
         # automatically insert an Asset record when it is not found.
-        import_stock_values_(code, parse_date(from_date), parse_date(to_date))
+        import_stock_values_(
+            market, code, parse_date(from_date), parse_date(to_date))
 
 
 @cli.command()

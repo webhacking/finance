@@ -177,6 +177,7 @@ class Asset(CRUDMixin, db.Model):
 
     type = db.Column(db.Enum(*asset_types, name='asset_type'))
     name = db.Column(db.String)
+    market = db.Column(db.String)
     code = db.Column(db.String)
     isin = db.Column(db.String)
     description = db.Column(db.Text)

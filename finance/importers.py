@@ -61,7 +61,7 @@ def import_stock_values(market: str, code: str,
     provider = Google()
     asset = Asset.get_by_symbol(code)
     data = provider.fetch_data(market, code, from_date, to_date)
-    for date, open_, high, low, close_, volume, adj_close in data:
+    for date, open_, high, low, close_, volume in data:
         AssetValue.create(
             evaluated_at=date, granularity=Granularity.day, asset=asset,
             open=open_, high=high, low=low, close=close_, volume=volume)

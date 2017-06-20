@@ -53,20 +53,15 @@ def index():
     return render_template('index.html', **context)
 
 
-# FIXME: deprecated
-@main_module.route('/data')
-def data():
-    portfolio = Portfolio.query.first()
-    start, end = map(request.args.get, ['start', 'end'])
-
-    def gen(start, end):
-        for date in date_range(start, end):
-            log.info('Calculating net worth on {}', date)
-            nw = portfolio.net_worth(date)
-            v = float(nw)
-            yield date.strftime('%Y%m%d'), v, v, v, v, 0
-
-    return jsonify({'data': [x for x in gen(start, end)]})
+@main_module.route('/asset/<market>:<code>')
+def view_asset_by_code(market, code):
+    asset = Asset.query \
+        .filter((Asset.market == market) & (Asset.code == code)) \
+        .first()
+    context = {
+        'asset': asset,
+    }
+    return render_template('view_asset_by_code.html', **context)
 
 
 @main_module.route('/portfolios/<int:portfolio_id>/nav')
