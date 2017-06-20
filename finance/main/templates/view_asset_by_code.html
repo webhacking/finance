@@ -1,11 +1,39 @@
 {% extends 'layout.html' %}
+
+{% macro format_asset_name(asset) %}
+  {%- if asset.market == 'KRX' %}
+    {{ asset.description }} ({{ asset.code }})
+  {%- else %}
+    {{ asset.code }}
+  {%- endif %}
+{% endmacro %}
+
 {% block content %}
 
-<h1>{{ asset.code }}</h1>
+<h1>{{ format_asset_name(asset) }}</h1>
 
-{% for value in asset.asset_values %}
-  {{ value }}
-{% endfor %}
+(TODO: Show a chart)
+
+<h2>Statistics</h2>
+
+(TODO: Show some statistics)
+
+<h2>Reports</h2>
+
+(TODO: Show DART reports)
+
+<h2>External Links</h2>
+
+{% if asset.market == 'KRX' %}
+<ul>
+  <li>
+    <a href="http://finance.naver.com/item/main.nhn?code={{ asset.code }}">Naver Finance</a>
+  </li>
+  <li>
+    <a href="http://paxnet.asiae.co.kr/asiae/stockIntro/indCurrent.jsp?code={{ asset.code }}">Paxnet</a>
+  </li>
+</ul>
+{% endif %}
 
 {% endblock %}
 
