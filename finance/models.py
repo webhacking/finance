@@ -1,6 +1,7 @@
 import collections
 import functools
 import operator
+from dataclasses import dataclass
 from datetime import datetime
 
 import uuid64
@@ -131,7 +132,8 @@ class User(CRUDMixin, UserMixin, db.Model):  # type: ignore
 # conversion, stock evaluation, etc.)
 
 
-class Granularity(object):
+@dataclass
+class Granularity:
     sec = '1sec'
     min = '1min'
     five_min = '5min'
@@ -181,7 +183,8 @@ class AssetValue(CRUDMixin, db.Model):  # type: ignore
                 self.volume)
 
 
-class AssetType(object):
+@dataclass
+class AssetType:
     currency = 'currency'
     stock = 'stock'
     bond = 'bond'
@@ -345,7 +348,8 @@ class StockAsset(Asset):
     eps = index_property('data', 'eps')
 
 
-class AccountType(object):
+@dataclass
+class AccountType:
     checking = 'checking'
     savings = 'savings'
     investment = 'investment'
@@ -539,7 +543,8 @@ class Portfolio(CRUDMixin, db.Model):  # type: ignore
         return merged
 
 
-class TransactionState(object):
+@dataclass
+class TransactionState:
     initiated = 'initiated'
     closed = 'closed'
     pending = 'pending'
@@ -593,7 +598,8 @@ class Transaction(CRUDMixin, db.Model):  # type: ignore
             db.session.commit()
 
 
-class RecordType(object):
+@dataclass
+class RecordType:
     deposit = 'deposit'
     withdraw = 'withdraw'
     balance_adjustment = 'balance_adjustment'
