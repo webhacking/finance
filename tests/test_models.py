@@ -325,18 +325,9 @@ def test_account_balance_time_series(account_stock, stock_asset_nvda):
         parse_date('2018-09-01'), parse_date('2018-09-10'))
     assert all([b == {} for b in balances])
 
-    Record.create(
-        account=account_stock, asset=stock_asset_nvda, quantity=100,
-        type=RecordType.deposit,
-        created_at=parse_date('2018-09-01'))
-    Record.create(
-        account=account_stock, asset=stock_asset_nvda, quantity=200,
-        type=RecordType.deposit,
-        created_at=parse_date('2018-09-02'))
-    Record.create(
-        account=account_stock, asset=stock_asset_nvda, quantity=300,
-        type=RecordType.deposit,
-        created_at=parse_date('2018-09-03'))
+    deposit(account_stock, stock_asset_nvda, 100, parse_date('2018-09-01'))
+    deposit(account_stock, stock_asset_nvda, 200, parse_date('2018-09-02'))
+    deposit(account_stock, stock_asset_nvda, 300, parse_date('2018-09-03'))
 
     balances = account_stock.balance_time_series(
         parse_date('2018-09-01'), parse_date('2018-09-10'))
