@@ -5,9 +5,11 @@ from sqlalchemy.exc import IntegrityError
 
 from finance.exceptions import (AssetNotFoundException,
                                 AssetValueUnavailableException)
+from finance.exceptions import (
+    AssetNotFoundException, AssetValueUnavailableException)
 from finance.models import (
     Account, Asset, AssetValue, Granularity, Portfolio, Record, RecordType,
-    Transaction, TransactionState, db, balance_adjustment, deposit,
+    Transaction, TransactionState, balance_adjustment, db, deposit,
     get_asset_by_fund_code)
 from finance.utils import parse_date, parse_datetime
 
@@ -314,6 +316,35 @@ def test_account_net_worth_4(account_checking, asset_usd):
     net_worth = account_checking.net_worth(
         base_asset=asset_usd, evaluated_at=parse_date('2018-08-30'))
     assert net_worth == 1000
+
+
+def test_account_balance_time_series(account_stock, stock_asset_nvda):
+    """Ensures Account.balance_time_series() returns correct time-series data.
+    """
+    balances = account_stock.balance_time_series(
+        parse_date('2018-09-01'), parse_date('2018-09-10'))
+    assert all([b == {} for b in balances])
+
+    Record.create(
+        account=account_stock, asset=stock_asset_nvda, quantity=100,
+        type=RecordType.deposit,
+        created_at=parse_date('2018-09-01'))
+    Record.create(
+        account=account_stock, asset=stock_asset_nvda, quantity=200,
+        type=RecordType.deposit,
+        created_at=parse_date('2018-09-02'))
+    Record.create(
+        account=account_stock, asset=stock_asset_nvda, quantity=300,
+        type=RecordType.deposit,
+        created_at=parse_date('2018-09-03'))
+
+    balances = account_stock.balance_time_series(
+        parse_date('2018-09-01'), parse_date('2018-09-10'))
+
+    assert next(balances) == {stock_asset_nvda: 100}
+    assert next(balances) == {stock_asset_nvda: 300}
+    assert next(balances) == {stock_asset_nvda: 600}
+    assert all([b == {stock_asset_nvda: 600} for b in balances])
 
 
 def test_granularity_enum():

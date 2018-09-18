@@ -441,6 +441,14 @@ class Account(CRUDMixin, db.Model):  # type: ignore
                 bs[asset] += quantity
         return bs
 
+    def balance_time_series(self, start_date, end_date,
+                            granularity=Granularity.day):
+        if granularity is not Granularity.day:
+            raise NotImplemented
+
+        for date in date_range(start_date, end_date):
+            yield self.balance(date)
+
     def net_worth(self, evaluated_at=None, granularity=Granularity.day,
                   approximation=False, base_asset=None):
         """Calculates the net worth of the account on a particular datetime.
