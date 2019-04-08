@@ -37,3 +37,10 @@ jobs:
         - sonar-scanner
       after_success:
         - coveralls
+    - stage: golang
+      install:
+        - curl -O https://dl.google.com/go/go1.12.2.linux-amd64.tar.gz
+        - tar zxf go1.12.2.linux-amd64.tar.gz
+        - export GOPATH=$GOPATH:$(pwd)/go:$(pwd)/goport
+      script:
+        - go test finance
