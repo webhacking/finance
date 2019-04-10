@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -99,5 +98,5 @@ func FetchFundInfo(code string) (float64, error) {
 		}
 	})
 
-	return strconv.ParseFloat(value, 64)
+	return ParseNumber(value)
 }
