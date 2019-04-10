@@ -2,12 +2,20 @@ package finance
 
 import (
 	"fmt"
+	"log"
 	"testing"
 )
 
 func TestLoadAssetsFromTsv(t *testing.T) {
 	assets := LoadAssetsFromTsv("assets.tsv")
-	fmt.Println(assets)
+
+	for _, asset := range assets {
+		value, error := FetchFundInfo(asset.Code)
+		if error != nil {
+			log.Println(error)
+		}
+		fmt.Printf("%s: %f\n", asset.Code, value)
+	}
 }
 
 func TestFetchFundInfo(t *testing.T) {
