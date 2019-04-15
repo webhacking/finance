@@ -36,8 +36,8 @@ func init() {
 	}
 }
 
-func TestPortfolio_CalcNetAssetValue(t *testing.T) {
-	nav := portfolio.CalcNetAssetValue()
+func TestPortfolio_NetAssetValue(t *testing.T) {
+	nav := portfolio.NetAssetValue()
 	if nav != (190*200 + 28*1480 + 1850*100) {
 		t.Errorf("Wrong NAV: %f\n", nav)
 	}
