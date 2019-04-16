@@ -23,6 +23,50 @@ func TestDecimalFromFloat(t *testing.T) {
 		assertEquals(t, expected, actual, "Incorrect value")
 	}
 }
+
+func TestMulInt(t *testing.T) {
+	params := []struct {
+		x        int64
+		y        int64
+		expected int64
+	}{
+		{0, 0, 0},
+		{0, 1, 0},
+		{1, 1, 1},
+		{1, 2, 2},
+		{2, 2, 4},
+		{13, 29, 377},
+		{-7, 19, -133},
+		{-23, -37, 851},
+	}
+
+	for _, param := range params {
+		actual := DecimalFromInt(param.x).Mul(DecimalFromInt(param.y))
+		assertEquals(t, DecimalFromInt(param.expected), actual,
+			fmt.Sprintf("Case %d*%d", param.x, param.y))
+	}
+}
+
+func TestMulFloat(t *testing.T) {
+	params := []struct {
+		x        string
+		y        string
+		expected string
+	}{
+		{"0.0", "0.0", "0.0"},
+		{"0.1", "0.0", "0.0"},
+		{"0.02", "0.04", "0.0008"},
+		{"12.01", "-18.75", "-225.1875"},
+	}
+
+	for _, param := range params {
+		actual := DecimalFromString(param.x).Mul(DecimalFromString(param.y))
+		assertEquals(t, DecimalFromString(param.expected), actual,
+			fmt.Sprintf("Case %s*%s", param.x, param.y))
+	}
+
+}
+
 func TestDecimalFloor(t *testing.T) {
 	params := []struct {
 		value    int64

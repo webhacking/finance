@@ -15,8 +15,16 @@ func DecimalFromString(value string) Decimal {
 	return Decimal(parsed * DecimalMultiplier)
 }
 
+func DecimalFromInt(value int64) Decimal {
+	return Decimal(value * DecimalMultiplier)
+}
+
 func DecimalFromFloat(value float64) Decimal {
 	return Decimal(math.Round(value * DecimalMultiplier))
+}
+
+func (dx Decimal) Mul(dy Decimal) Decimal {
+	return Decimal(dx * dy / DecimalMultiplier)
 }
 
 func (d Decimal) Floor() int64 {
