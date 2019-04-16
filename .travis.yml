@@ -51,3 +51,16 @@ matrix:
         - sonar-scanner
       after_success:
         - coveralls
+    - stage: golang
+      install:
+        - export GOVERSION="1.12.4"
+        - export GOPATH=$GOPATH:$(pwd)/go:$(pwd)/goport
+        - export GOROOT=$(pwd)/go
+        - export PATH=$GOROOT/bin:$PATH
+        - curl -O "https://dl.google.com/go/go${GOVERSION}.linux-amd64.tar.gz"
+        - tar zxf "go${GOVERSION}.linux-amd64.tar.gz"
+        - go version
+      before_script:
+        - go get -v -t ./goport/src/finance
+      script:
+        - go test finance
