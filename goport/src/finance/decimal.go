@@ -24,6 +24,8 @@ func (d Decimal) Floor() int64 {
 }
 
 // AsFloat converts a Decimal type to float64 (approximation)
-// func (d Decimal) AsFloat() float64 {
-// 	return float64(int64(d) / float64(DecimalMultiplier))
-// }
+func (d Decimal) AsFloat() float64 {
+	return float64(d) / DecimalMultiplier
+}
+
+// TODO: We are going to need a DB adapter at some point in the future

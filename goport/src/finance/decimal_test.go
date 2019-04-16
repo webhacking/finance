@@ -36,6 +36,22 @@ func TestDecimalFloor(t *testing.T) {
 	}
 }
 
+func TestAsFloat64(t *testing.T) {
+	params := []struct {
+		value    int64
+		expected float64
+	}{
+		{10000, 1.0},
+		{12345, 1.2345},
+		{8459492, 845.9492},
+	}
+
+	for _, param := range params {
+		actual := Decimal(param.value).AsFloat()
+		assertEquals(t, param.expected, actual, "Incorrect value")
+	}
+}
+
 func TestDecimalArithmatics(t *testing.T) {
 	params := []struct {
 		x        float64
