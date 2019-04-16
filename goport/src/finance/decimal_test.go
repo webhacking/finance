@@ -36,6 +36,22 @@ func TestDecimalFloor(t *testing.T) {
 	}
 }
 
+func TestDecimalCeil(t *testing.T) {
+	params := []struct {
+		value    int64
+		expected int64
+	}{
+		{10000, 1},
+		{12345, 2},
+		{8459492, 846},
+	}
+
+	for _, param := range params {
+		actual := Decimal(param.value).Ceil()
+		assertEquals(t, param.expected, actual, "Incorrect value")
+	}
+}
+
 func TestAsFloat64(t *testing.T) {
 	params := []struct {
 		value    int64
