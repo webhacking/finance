@@ -35,9 +35,8 @@ func (d Decimal) Ceil() int64 {
 
 	if remainder > 0 {
 		return value/DecimalMultiplier + 1
-	} else {
-		return value / DecimalMultiplier
 	}
+	return value / DecimalMultiplier
 }
 
 func (d Decimal) Round() int64 {
