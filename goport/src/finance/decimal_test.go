@@ -68,14 +68,21 @@ func TestDecimalRound(t *testing.T) {
 		value    int64
 		expected int64
 	}{
+		{-10001, -1},
+		{-10000, -1},
+		{-5001, -1},
+		{-5000, 0},
+		{-1, 0},
+		{0, 0},
+		{5000, 0},
+		{5001, 1},
 		{10000, 1},
 		{12345, 1},
-		{15345, 2},
 	}
 
 	for _, param := range params {
 		actual := Decimal(param.value).Round()
-		assertEquals(t, param.expected, actual, "Incorrect value")
+		assertEquals(t, param.expected, actual, fmt.Sprintf("Case %d", param.value))
 	}
 }
 

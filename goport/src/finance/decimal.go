@@ -46,9 +46,10 @@ func (d Decimal) Round() int64 {
 
 	if remainder > (DecimalMultiplier / 2) {
 		return value/DecimalMultiplier + 1
-	} else {
-		return value / DecimalMultiplier
+	} else if remainder < (-DecimalMultiplier / 2) {
+		return value/DecimalMultiplier - 1
 	}
+	return value / DecimalMultiplier
 }
 
 // AsFloat converts a Decimal type to float64 (approximation)
