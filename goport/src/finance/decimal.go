@@ -27,6 +27,10 @@ func (dx Decimal) Mul(dy Decimal) Decimal {
 	return Decimal(dx * dy / DecimalMultiplier)
 }
 
+func (dx Decimal) Div(dy Decimal) Decimal {
+	return Decimal(dx * DecimalMultiplier / dy)
+}
+
 func (d Decimal) Floor() int64 {
 	value := int64(d)
 	remainder := value % DecimalMultiplier

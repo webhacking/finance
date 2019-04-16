@@ -47,7 +47,28 @@ func TestMul(t *testing.T) {
 		assertEquals(t, DecimalFromString(param.expected), actual,
 			fmt.Sprintf("Case %s*%s", param.x, param.y))
 	}
+}
 
+func TestDiv(t *testing.T) {
+	params := []struct {
+		x        string
+		y        string
+		expected string
+	}{
+		{"0.0", "1.0", "0.0"},
+		{"0.3", "0.2", "1.5"},
+		{"1", "1", "1"},
+		{"2", "2", "1"},
+		{"1", "2", "0.5"},
+		{"13", "25", "0.52"},
+		{"-65659.429", "1994", "-32.9285"},
+	}
+
+	for _, param := range params {
+		actual := DecimalFromString(param.x).Div(DecimalFromString(param.y))
+		assertEquals(t, DecimalFromString(param.expected), actual,
+			fmt.Sprintf("Case %s/%s", param.x, param.y))
+	}
 }
 
 func TestDecimalFloor(t *testing.T) {
