@@ -48,15 +48,18 @@ func TestDecimalCeil(t *testing.T) {
 		value    int64
 		expected int64
 	}{
-		// TODO: Test negative values
+		{-10001, -1},
+		{-10000, -1},
+		{-9999, 0},
+		{-1, 0},
+		{0, 0},
 		{10000, 1},
 		{12345, 2},
-		{8459492, 846},
 	}
 
 	for _, param := range params {
 		actual := Decimal(param.value).Ceil()
-		assertEquals(t, param.expected, actual, "Incorrect value")
+		assertEquals(t, param.expected, actual, fmt.Sprintf("Case %d", param.value))
 	}
 }
 
