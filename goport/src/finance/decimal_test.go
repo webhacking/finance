@@ -35,3 +35,18 @@ func TestDecimalFloor(t *testing.T) {
 		assertEquals(t, param.expected, actual, "Incorrect value")
 	}
 }
+
+func TestDecimalArithmatics(t *testing.T) {
+	params := []struct {
+		x        float64
+		y        float64
+		expected float64
+	}{
+		{3.78, 12.3, 16.08},
+	}
+	for _, param := range params {
+		x := DecimalFromFloat(param.x)
+		y := DecimalFromFloat(param.y)
+		assertEquals(t, DecimalFromFloat(param.expected), x+y, "Incorrect value")
+	}
+}
