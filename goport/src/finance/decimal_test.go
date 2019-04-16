@@ -41,6 +41,7 @@ func TestDecimalCeil(t *testing.T) {
 		value    int64
 		expected int64
 	}{
+		// TODO: Test negative values
 		{10000, 1},
 		{12345, 2},
 		{8459492, 846},
@@ -48,6 +49,22 @@ func TestDecimalCeil(t *testing.T) {
 
 	for _, param := range params {
 		actual := Decimal(param.value).Ceil()
+		assertEquals(t, param.expected, actual, "Incorrect value")
+	}
+}
+
+func TestDecimalRound(t *testing.T) {
+	params := []struct {
+		value    int64
+		expected int64
+	}{
+		{10000, 1},
+		{12345, 1},
+		{15345, 2},
+	}
+
+	for _, param := range params {
+		actual := Decimal(param.value).Round()
 		assertEquals(t, param.expected, actual, "Incorrect value")
 	}
 }
