@@ -1,6 +1,9 @@
 package finance
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 // Decimal is a fixed-point type with four decimal points
 type Decimal int64
@@ -21,6 +24,10 @@ func DecimalFromInt(value int64) Decimal {
 
 func DecimalFromFloat(value float64) Decimal {
 	return Decimal(math.Round(value * DecimalMultiplier))
+}
+
+func (d Decimal) String() string {
+	return fmt.Sprintf("%d.%04d", d/DecimalMultiplier, d%DecimalMultiplier)
 }
 
 func (dx Decimal) Mul(dy Decimal) Decimal {

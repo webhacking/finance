@@ -24,6 +24,12 @@ func TestDecimalFromFloat(t *testing.T) {
 	}
 }
 
+func TestDecimalWithFormatString(t *testing.T) {
+	expected := "863819.0285"
+	actual := fmt.Sprintf("%s", DecimalFromString(expected))
+	assertEquals(t, expected, actual, "Incorrect value")
+}
+
 func TestMul(t *testing.T) {
 	params := []struct {
 		x        string
