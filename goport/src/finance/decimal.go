@@ -20,7 +20,13 @@ func DecimalFromFloat(value float64) Decimal {
 }
 
 func (d Decimal) Floor() int64 {
-	return int64(d) / DecimalMultiplier
+	value := int64(d)
+	remainder := value % DecimalMultiplier
+
+	if remainder < 0 {
+		return value/DecimalMultiplier - 1
+	}
+	return value / DecimalMultiplier
 }
 
 func (d Decimal) Ceil() int64 {

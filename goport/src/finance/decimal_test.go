@@ -1,6 +1,9 @@
 package finance
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestDecimalFromFloat(t *testing.T) {
 	params := []struct {
@@ -25,14 +28,18 @@ func TestDecimalFloor(t *testing.T) {
 		value    int64
 		expected int64
 	}{
+		{-10001, -2},
+		{-10000, -1},
+		{-9999, -1},
+		{-1, -1},
+		{0, 0},
 		{10000, 1},
 		{12345, 1},
-		{8459492, 845},
 	}
 
 	for _, param := range params {
 		actual := Decimal(param.value).Floor()
-		assertEquals(t, param.expected, actual, "Incorrect value")
+		assertEquals(t, param.expected, actual, fmt.Sprintf("Case %d", param.value))
 	}
 }
 
