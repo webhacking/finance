@@ -32,7 +32,6 @@ func TestDecimalFloor(t *testing.T) {
 
 	for _, param := range params {
 		actual := Decimal(param.value).Floor()
-		expected := Decimal(param.expected * 10000)
-		assertEquals(t, expected, actual, "Incorrect value")
+		assertEquals(t, param.expected, actual, "Incorrect value")
 	}
 }
