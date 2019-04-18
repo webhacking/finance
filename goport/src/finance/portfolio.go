@@ -6,14 +6,14 @@ type Portfolio struct {
 
 type PortfolioRecord struct {
 	Asset        Asset
-	Quantity     float64
-	DesiredShare float64
+	Quantity     Decimal
+	DesiredShare Decimal
 }
 
-func (portfolio *Portfolio) NetAssetValue() float64 {
-	netAssetValue := 0.0
+func (portfolio *Portfolio) NetAssetValue() Decimal {
+	netAssetValue := Decimal(0)
 	for _, record := range portfolio.Records {
-		netAssetValue += record.Asset.UnitPrice * record.Quantity
+		netAssetValue += record.Asset.UnitPrice.Mul(record.Quantity)
 	}
 	return netAssetValue
 }

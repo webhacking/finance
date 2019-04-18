@@ -19,7 +19,7 @@ type Asset struct {
 	Name      string
 	Code      string
 	Type      AssetType
-	UnitPrice float64
+	UnitPrice Decimal
 }
 
 // AssetType is a type of an investment vehicle

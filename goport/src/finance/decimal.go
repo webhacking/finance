@@ -35,6 +35,10 @@ func (dx Decimal) Mul(dy Decimal) Decimal {
 }
 
 func (dx Decimal) Div(dy Decimal) Decimal {
+	remainder := (dx * DecimalMultiplier) % dy
+	if remainder > (DecimalMultiplier / 2) {
+		return Decimal(dx*DecimalMultiplier/dy + 1)
+	}
 	return Decimal(dx * DecimalMultiplier / dy)
 }
 
